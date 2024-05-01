@@ -37,7 +37,7 @@ class ApplicationLogic:
         images = [os.path.join(source_folder, i)
                 for i in os.listdir(source_folder) if i.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
-    # Extrahieren der EXIF-Datumsdaten und Sortieren der Liste
+    # ddExtrahieren der EXIF-Datumsdaten und Sortieren der Liste
         images.sort(key=lambda x: self.get_exif_date(x) or datetime.min)
 
 
