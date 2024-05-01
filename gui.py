@@ -2,6 +2,7 @@ import ttkbootstrap as ttk
 import tkinter as tk
 from ttkbootstrap.constants import *
 import os
+from tkinter import filedialog
 
 
 class Gui:
@@ -16,7 +17,7 @@ class Gui:
                 self.sourceLabel.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
                 self.sourceEntry = ttk.Entry(self.root)
                 self.sourceEntry.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
-                self.sourceBrowse = ttk.Button(self.root, text="Browse")
+                self.sourceBrowse = ttk.Button(self.root, text="Browse", command=self.browseSource)
                 self.sourceBrowse.grid(row=1, column=3, sticky="nsew", padx=10, pady=10)
                 self.sourceCheck = tk.Checkbutton(self.root)
                 self.sourceCheck.grid(row=2, column=1, sticky="e", pady=10)
@@ -28,7 +29,7 @@ class Gui:
                 self.targetLabel.grid(row=4, column=1, sticky="nsew", padx=10, pady=10)
                 self.targetEntry = ttk.Entry(self.root)
                 self.targetEntry.grid(row=4, column=2, sticky="nsew", padx=10, pady=10)
-                self.targetBrowse = ttk.Button(self.root, text="Browse")
+                self.targetBrowse = ttk.Button(self.root, text="Browse",command=self.browseTarget)
                 self.targetBrowse.grid(row=4, column=3, sticky="nsew", padx=10, pady=10)
 
                 #Dropdown
@@ -44,6 +45,20 @@ class Gui:
                 #Submit
                 self.submitButton = ttk.Button(self.root, text="Submit", command=self.submit)
                 self.submitButton.grid(row=7, column=1,columnspan=3, sticky="nsew", padx=10, pady=10)
+
+        def browseTarget(self):
+                filepath = filedialog.askdirectory()
+                if filepath:
+                        self.targetEntry.delete(0, END)
+                        self.targetEntry.insert(0, filepath)
+
+        def browseSource(self):
+                filepath = filedialog.askdirectory()
+                if filepath:
+                        self.sourceEntry.delete(0, END)
+                        self.sourceEntry.insert(0, filepath)
+
+
 
         def submit(self):
                 source_folder = self.sourceEntry.get()
