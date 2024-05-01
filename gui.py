@@ -35,7 +35,7 @@ class Gui:
                 self.optionDrop = ttk.Combobox(self.root, values=["kopieren", "verchieben"])
                 self.optionDrop.current(0)
                 self.optionDrop.grid(row=5, column=1, sticky="nsew", padx=10)
-                #value = optionDrop.get()
+
 
                 #Textausgabe
                 self.textWidget = ttk.ScrolledText(self.root, height=5, width=50)

@@ -2,7 +2,7 @@ from gui import Gui
 from applicationLogic import ApplicationLogic
 import ttkbootstrap as ttk
 
-
+#!!
 
 def main():
     root = ttk.Window(title="Bilder - EXIF - App", themename="lumen")
