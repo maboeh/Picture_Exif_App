@@ -9,23 +9,26 @@ class Gui:
         def __init__(self,root,logic):
                 self.root = root
                 self.logic = logic
+                # Erstellen der BooleanVar
+                self.check_var = tk.BooleanVar()
                 self.create_widgets()
+
 
         def create_widgets(self):
                 #Quellenblock
-                self.sourceLabel = ttk.Label(self.root, text="Quellverzeichnis")
+                self.sourceLabel = ttk.Label(self.root, text="Sourcefolder")
                 self.sourceLabel.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
                 self.sourceEntry = ttk.Entry(self.root)
                 self.sourceEntry.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
                 self.sourceBrowse = ttk.Button(self.root, text="Browse", command=self.browseSource)
                 self.sourceBrowse.grid(row=1, column=3, sticky="nsew", padx=10, pady=10)
-                self.sourceCheck = tk.Checkbutton(self.root)
+                self.sourceCheck = tk.Checkbutton(self.root, variable=self.check_var)
                 self.sourceCheck.grid(row=2, column=1, sticky="e", pady=10)
-                self.checkLabel = ttk.Label(self.root, text="Unterverzeichnisse einbeziehen" )
+                self.checkLabel = ttk.Label(self.root, text="include Subfolders" )
                 self.checkLabel.grid(row=2, column=2, sticky="w", pady=10)
 
                 #Zielblock
-                self.targetLabel = ttk.Label(self.root, text="Zielverzeichnis")
+                self.targetLabel = ttk.Label(self.root, text="Sourcefolder")
                 self.targetLabel.grid(row=4, column=1, sticky="nsew", padx=10, pady=10)
                 self.targetEntry = ttk.Entry(self.root)
                 self.targetEntry.grid(row=4, column=2, sticky="nsew", padx=10, pady=10)
@@ -33,7 +36,7 @@ class Gui:
                 self.targetBrowse.grid(row=4, column=3, sticky="nsew", padx=10, pady=10)
 
                 #Dropdown
-                self.optionDrop = ttk.Combobox(self.root, values=["kopieren", "verchieben"])
+                self.optionDrop = ttk.Combobox(self.root, values=["copy", "move"])
                 self.optionDrop.current(0)
                 self.optionDrop.grid(row=5, column=1, sticky="nsew", padx=10)
 
@@ -63,6 +66,9 @@ class Gui:
         def submit(self):
                 source_folder = self.sourceEntry.get()
                 self.logic.getPicPaths(source_folder)
+
+                #if self.check_var.get():
+
 
 
                 target_folder = self.targetEntry.get()

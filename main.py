@@ -5,7 +5,7 @@ import ttkbootstrap as ttk
 #!!
 
 def main():
-    root = ttk.Window(title="Bilder - EXIF - App", themename="lumen")
+    root = ttk.Window(title="EXIF - App", themename="lumen")
     logic = ApplicationLogic()
     gui = Gui(root, logic)
     root.mainloop()
