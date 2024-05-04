@@ -10,7 +10,8 @@ class Gui:
                 self.root = root
                 self.logic = logic
                 # Erstellen der BooleanVar
-                self.check_var = tk.BooleanVar()
+                self.sourceCheck_var = tk.BooleanVar()
+                self.targetCheck_var = tk.BooleanVar()
                 self.create_widgets()
 
 
@@ -22,32 +23,38 @@ class Gui:
                 self.sourceEntry.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
                 self.sourceBrowse = ttk.Button(self.root, text="Browse", command=self.browseSource)
                 self.sourceBrowse.grid(row=1, column=3, sticky="nsew", padx=10, pady=10)
-                self.sourceCheck = tk.Checkbutton(self.root, variable=self.check_var)
+
+                self.sourceCheck = tk.Checkbutton(self.root, variable=self.sourceCheck_var)
                 self.sourceCheck.grid(row=2, column=1, sticky="e", pady=10)
-                self.checkLabel = ttk.Label(self.root, text="include Subfolders" )
-                self.checkLabel.grid(row=2, column=2, sticky="w", pady=10)
+                self.sourceCheckLabel = ttk.Label(self.root, text="include Subfolders" )
+                self.sourceCheckLabel.grid(row=2, column=2, sticky="w", pady=10)
 
                 #Zielblock
-                self.targetLabel = ttk.Label(self.root, text="Sourcefolder")
+                self.targetLabel = ttk.Label(self.root, text="Targetfolder")
                 self.targetLabel.grid(row=4, column=1, sticky="nsew", padx=10, pady=10)
                 self.targetEntry = ttk.Entry(self.root)
                 self.targetEntry.grid(row=4, column=2, sticky="nsew", padx=10, pady=10)
                 self.targetBrowse = ttk.Button(self.root, text="Browse",command=self.browseTarget)
                 self.targetBrowse.grid(row=4, column=3, sticky="nsew", padx=10, pady=10)
 
+                self.targetCheck = tk.Checkbutton(self.root, variable=self.targetCheck_var)
+                self.targetCheck.grid(row=5, column=1, sticky="e", pady=10)
+                self.targetCheckLabel = ttk.Label(self.root, text="generate CSV-file")
+                self.targetCheckLabel.grid(row=5, column=2, sticky="w", pady=10)
+
                 #Dropdown
                 self.optionDrop = ttk.Combobox(self.root, values=["copy", "move"])
                 self.optionDrop.current(0)
-                self.optionDrop.grid(row=5, column=1, sticky="nsew", padx=10)
+                self.optionDrop.grid(row=6, column=1, sticky="nsew", padx=10)
 
 
                 #Textausgabe
                 self.textWidget = ttk.ScrolledText(self.root, height=5, width=50)
-                self.textWidget.grid(row=6, column=1, columnspan=5, sticky="nsew", padx=10, pady=10)
+                self.textWidget.grid(row=7, column=1, columnspan=5, sticky="nsew", padx=10, pady=10)
 
                 #Submit
                 self.submitButton = ttk.Button(self.root, text="Submit", command=self.submit)
-                self.submitButton.grid(row=7, column=1,columnspan=3, sticky="nsew", padx=10, pady=10)
+                self.submitButton.grid(row=8, column=1,columnspan=3, sticky="nsew", padx=10, pady=10)
 
         def browseTarget(self):
                 filepath = filedialog.askdirectory()
@@ -65,18 +72,36 @@ class Gui:
 
         def submit(self):
                 source_folder = self.sourceEntry.get()
-                self.logic.getPicPaths(source_folder)
-
-                #if self.check_var.get():
-
-
-
                 target_folder = self.targetEntry.get()
-                self.logic.copyImages(target_folder,source_folder)
+
+                if self.sourceCheck_var.get():
+                        self.logic.getPicPathsSub(source_folder)
+                        self.logic.copyImages(target_folder, source_folder,subCheck=True)
+                else:
+                        self.logic.getPicPaths(source_folder)
+                        self.logic.copyImages(target_folder, source_folder,subCheck=False)
 
 
-                csv_filepath = os.path.join(target_folder, "data.csv")
-                self.logic.writeCSV(csv_filepath)
+
+                if self.targetCheck_var.get():
+                        csv_filepath = os.path.join(self.targetEntry.get(), "data.csv")
+                        self.logic.writeCSV(csv_filepath, source_folder)
+
+                if self.targetCheck_var.get() and self.sourceCheck_var.get():
+                        csv_filepath = os.path.join(self.targetEntry.get(), "data.csv")
+                        self.logic.writeCSVSub(csv_filepath, target_folder)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
