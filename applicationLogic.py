@@ -81,54 +81,212 @@ class ApplicationLogic:
 
 
 
-    def copyImages(self,target_folder,source_folder,subCheck=False):
+    #def copyImages(self,source_folder,target_folder=None,subCheck=False):
 
-        if subCheck:
-            for root, dirs, files in os.walk(source_folder): #inkludiert subfolders
-                for file in files: #geht durch jedes file
-                    if file.lower().endswith(('.jpg', '.jpeg', '.png')): #setzt die namen auf lowercase und nimmt nur bestimmte endungen
-                        img_path = os.path.join(root, file) #setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
-                        date = self.get_exif_date(img_path) #öffnet diesen oben erzeugten pfad und liest das exif datum aus
-                        if date:      #falls ein Datum existiert
+
+     #   if subCheck and target_folder:
+      #      for root, dirs, files in os.walk(source_folder): #inkludiert subfolders
+       #         for file in files: #geht durch jedes file
+        #            if file.lower().endswith(('.jpg', '.jpeg', '.png')): #setzt die namen auf lowercase und nimmt nur bestimmte endungen
+         #               img_path = os.path.join(root, file) #setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
+          #              date = self.get_exif_date(img_path) #öffnet diesen oben erzeugten pfad und liest das exif datum aus
+           #             if date:      #falls ein Datum existiert
                             # Erstellen eines neuen Dateinamens basierend auf dem Datum
-                            new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]  #erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
-                            new_filepath = os.path.join(root, new_filename)  #macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
+            #                new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]  #erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
+             #               relative_path = os.path.relpath(root, source_folder)
+              #              new_folder = os.path.join(target_folder, relative_path)
+               #             os.makedirs(new_folder, exist_ok=True)
+                #            new_filepath = os.path.join(new_folder, new_filename) #macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
 
                             # Umbenennen des Bildes
-                            os.rename(img_path, new_filepath)  #benennt die alte datei in die neue um
+                 #           os.rename(img_path, new_filepath)  #benennt die alte datei in die neue um
+                  #          print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                #        else:
+                 #           print(f"Kein gültiges Datum gefunden für: {img_path}")
+                  #          withoutFolder = os.path.join(target_folder, "without_Date")
+
+
+                   #         if not os.path.exists(withoutFolder):
+                    #            os.makedirs(withoutFolder)
+#
+ #                           shutil.move(img_path, withoutFolder)
+  #                          print(f"Datei {img_path} verschoben nach {withoutFolder}")
+
+
+   #     elif subCheck and not target_folder:
+    #        for root, dirs, files in os.walk(source_folder): #inkludiert subfolders
+     #           for file in files: #geht durch jedes file
+      #              if file.lower().endswith(('.jpg', '.jpeg', '.png')): #setzt die namen auf lowercase und nimmt nur bestimmte endungen
+       #                 img_path = os.path.join(root, file) #setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
+        #                date = self.get_exif_date(img_path) #öffnet diesen oben erzeugten pfad und liest das exif datum aus
+         #               if date:      #falls ein Datum existiert
+          #                  # Erstellen eines neuen Dateinamens basierend auf dem Datum
+           #                 new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]  #erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
+            #                new_filepath = os.path.join(root, new_filename)  #macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
+
+                            # Umbenennen des Bildes
+             #               os.rename(img_path, new_filepath)  #benennt die alte datei in die neue um
+              #              print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+               #         else:
+                #            print(f"Kein gültiges Datum gefunden für: {img_path}")
+                 #           withoutFolder = os.path.join(root, "without_Date")
+#
+#
+ #                           if not os.path.exists(withoutFolder):
+  #                              os.makedirs(withoutFolder)
+#
+ #                           shutil.move(img_path, withoutFolder)
+  #                          print(f"Datei {img_path} verschoben nach {withoutFolder}")
+
+   #     elif not subCheck and target_folder:
+    #        for file in os.listdir(source_folder):
+     #           if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+      #              img_path = os.path.join(source_folder,file)
+       #             date = self.get_exif_date(img_path)
+        #            if date:
+         #               new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
+          #              relative_path = os.path.relpath(root, source_folder)
+           #             new_folder = os.path.join(target_folder, relative_path)
+            #            os.makedirs(new_folder, exist_ok=True)
+             #           new_filepath = os.path.join(new_folder, new_filename)
+
+
+              #          os.rename(img_path, new_filepath)
+               #         print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                #    else:
+                 #       print(f"Kein gültiges Datum gefunden für: {img_path}")
+                  #      withoutFolder = os.path.join(target_folder, "ohneDatum")
+
+                   #     if not os.path.exists(withoutFolder):
+                    #        os.makedirs(withoutFolder)
+
+                     #   shutil.move(img_path, withoutFolder)
+                      #  print(f"Datei {img_path} verschoben nach {withoutFolder}")
+
+        #elif not subCheck and not target_folder:
+            #for file in os.listdir(source_folder):
+             #   if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+              #      img_path = os.path.join(source_folder,file)
+               #     date = self.get_exif_date(img_path)
+                #    if date:
+                 #       new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
+                  #      new_filepath = os.path.join(source_folder,new_filename)
+
+
+                   #     os.rename(img_path, new_filepath)
+                    #    print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                    #else:
+                     #   print(f"Kein gültiges Datum gefunden für: {img_path}")
+                      #  withoutFolder = os.path.join(source_folder, "ohneDatum")
+
+                       # if not os.path.exists(withoutFolder):
+                        #    os.makedirs(withoutFolder)
+
+                        #shutil.move(img_path, withoutFolder)
+                        #print(f"Datei {img_path} verschoben nach {withoutFolder}")
+
+
+    def copyImages(self, source_folder, target_folder=None, subCheck=False):
+        def is_image(file):
+            return file.lower().endswith(('.jpg', '.jpeg', '.png'))
+
+        def get_new_filename(date, img_path):
+            return date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
+
+        def move_file_without_date(img_path, root):
+            withoutFolder = os.path.join(root, "without_Date")
+            if not os.path.exists(withoutFolder):
+                os.makedirs(withoutFolder)
+            shutil.move(img_path, withoutFolder)
+            print(f"Datei {img_path} verschoben nach {withoutFolder}")
+
+        if subCheck and target_folder:
+            for root, dirs, files in os.walk(source_folder):  # inkludiert subfolders
+                for file in files:  # geht durch jedes file
+                    if is_image(file):  # setzt die namen auf lowercase und nimmt nur bestimmte endungen
+                        img_path = os.path.join(root,
+                                                file)  # setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
+                        date = self.get_exif_date(
+                            img_path)  # öffnet diesen oben erzeugten pfad und liest das exif datum aus
+                        if date:  # falls ein Datum existiert
+                            # Erstellen eines neuen Dateinamens basierend auf dem Datum
+                            new_filename = get_new_filename(date,
+                                                            img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
+                            relative_path = os.path.relpath(root, source_folder)
+                            new_folder = os.path.join(target_folder, relative_path)
+                            os.makedirs(new_folder, exist_ok=True)
+                            new_filepath = os.path.join(new_folder,
+                                                        new_filename)  # macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
+
+                            # Umbenennen des Bildes
+                            os.rename(img_path, new_filepath)  # benennt die alte datei in die neue um
                             print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
                         else:
                             print(f"Kein gültiges Datum gefunden für: {img_path}")
-                            withoutFolder = os.path.join(target_folder, "ohneDatum")
+                            move_file_without_date(img_path, target_folder)
 
+        elif subCheck and not target_folder:
+            for root, dirs, files in os.walk(source_folder):  # inkludiert subfolders
+                for file in files:  # geht durch jedes file
+                    if is_image(file):  # setzt die namen auf lowercase und nimmt nur bestimmte endungen
+                        img_path = os.path.join(root,
+                                                file)  # setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
+                        date = self.get_exif_date(
+                            img_path)  # öffnet diesen oben erzeugten pfad und liest das exif datum aus
+                        if date:  # falls ein Datum existiert
+                            # Erstellen eines neuen Dateinamens basierend auf dem Datum
+                            new_filename = get_new_filename(date,
+                                                            img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
+                            new_filepath = os.path.join(root,
+                                                        new_filename)  # macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
 
-                            if not os.path.exists(withoutFolder):
-                                os.makedirs(withoutFolder)
+                            # Umbenennen des Bildes
+                            os.rename(img_path, new_filepath)  # benennt die alte datei in die neue um
+                            print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                        else:
+                            print(f"Kein gültiges Datum gefunden für: {img_path}")
+                            move_file_without_date(img_path, root)
 
-                            shutil.move(img_path, withoutFolder)
-                            print(f"Datei {img_path} verschoben nach {withoutFolder}")
-
-        else:
+        elif not subCheck and target_folder:
+            root = source_folder
             for file in os.listdir(source_folder):
-                if file.lower().endswith(('.jpg', '.jpeg', '.png')):
-                    img_path = os.path.join(source_folder,file)
+                if is_image(file):
+                    img_path = os.path.join(source_folder, file)
                     date = self.get_exif_date(img_path)
                     if date:
-                        new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
-                        new_filepath = os.path.join(source_folder,new_filename)
-
+                        new_filename = get_new_filename(date, img_path)
+                        relative_path = os.path.relpath(root, source_folder)
+                        new_folder = os.path.join(target_folder, relative_path)
+                        os.makedirs(new_folder, exist_ok=True)
+                        new_filepath = os.path.join(new_folder, new_filename)
 
                         os.rename(img_path, new_filepath)
                         print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
                     else:
                         print(f"Kein gültiges Datum gefunden für: {img_path}")
-                        withoutFolder = os.path.join(target_folder, "ohneDatum")
+                        move_file_without_date(img_path, target_folder)
 
-                        if not os.path.exists(withoutFolder):
-                            os.makedirs(withoutFolder)
+        elif not subCheck and not target_folder:
+            root = source_folder
+            for file in os.listdir(source_folder):
+                if is_image(file):
+                    img_path = os.path.join(source_folder, file)
+                    date = self.get_exif_date(img_path)
+                    if date:
+                        new_filename = get_new_filename(date, img_path)
+                        new_filepath = os.path.join(source_folder, new_filename)
 
-                        shutil.move(img_path, withoutFolder)
-                        print(f"Datei {img_path} verschoben nach {withoutFolder}")
+                        os.rename(img_path, new_filepath)
+                        print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                    else:
+                        print(f"Kein gültiges Datum gefunden für: {img_path}")
+                        move_file_without_date(img_path, source_folder)
+
+
+
+
+
+
 
     def moveImages(self,target_folder,source_folder,subCheck=False):
         pass
