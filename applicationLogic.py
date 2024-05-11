@@ -79,20 +79,37 @@ class ApplicationLogic:
 
         print("CSV-Datei wurde erstellt und Daten im Dictionary gespeichert.")
 
-
-
-    def delete_subfolder(self,path):
+    def delete_subfolders(self, main_folder):
         # Überprüfen, ob der Pfad existiert
-        if os.path.exists(path):
+        if os.path.exists(main_folder):
             # Überprüfen, ob der Pfad zu einem Verzeichnis führt
-            if os.path.isdir(path):
-                # Löschen des Verzeichnisses und aller darin enthaltenen Dateien
-                shutil.rmtree(path)
-                print(f"Das Verzeichnis {path} wurde gelöscht.")
+            if os.path.isdir(main_folder):
+                # Iterieren durch alle Unterverzeichnisse
+                for subfolder in os.listdir(main_folder):
+                    subfolder_path = os.path.join(main_folder, subfolder)
+                    # Überprüfen, ob das Unterverzeichnis leer ist
+                    if os.path.isdir(subfolder_path) and not os.listdir(subfolder_path):
+                        # Löschen des Unterverzeichnisses und aller darin enthaltenen Dateien
+                        shutil.rmtree(subfolder_path)
+                        print(f"Das Unterverzeichnis {subfolder_path} wurde gelöscht.")
             else:
-                print(f"{path} ist kein Verzeichnis.")
+                print(f"{main_folder} ist kein Verzeichnis.")
         else:
-            print(f"Der Pfad {path} existiert nicht.")
+            print(f"Der Pfad {main_folder} existiert nicht.")
+
+    def is_directory_empty(self,path):
+        # Überprüfen, ob der Pfad existiert und ein Verzeichnis ist
+        if os.path.exists(path) and os.path.isdir(path):
+            # Überprüfen, ob das Verzeichnis leer ist
+            if not os.listdir(path):
+                print(f"Das Verzeichnis {path} ist leer.")
+                return True
+            else:
+                print(f"Das Verzeichnis {path} ist nicht leer.")
+                return False
+        else:
+            print(f"Der Pfad {path} existiert nicht oder ist kein Verzeichnis.")
+            return None
 
 
 
@@ -123,7 +140,6 @@ class ApplicationLogic:
                             new_filename = get_new_filename(date,
                                                             img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
                             relative_path = os.path.relpath(root, source_folder)
-                            old_path = os.path.join(source_folder, relative_path)
                             new_folder = os.path.join(target_folder, relative_path)
                             os.makedirs(new_folder, exist_ok=True)
                             new_filepath = os.path.join(new_folder,
@@ -135,7 +151,9 @@ class ApplicationLogic:
                         else:
                             print(f"Kein gültiges Datum gefunden für: {img_path}")
                             move_file_without_date(img_path, target_folder)
-            self.delete_subfolder(old_path)
+
+
+            self.delete_subfolders(source_folder)
 
         elif subCheck and not target_folder:
             for root, dirs, files in os.walk(source_folder):  # inkludiert subfolders
