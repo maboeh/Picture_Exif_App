@@ -81,109 +81,19 @@ class ApplicationLogic:
 
 
 
-    #def copyImages(self,source_folder,target_folder=None,subCheck=False):
+    def delete_subfolder(self,path):
+        # Überprüfen, ob der Pfad existiert
+        if os.path.exists(path):
+            # Überprüfen, ob der Pfad zu einem Verzeichnis führt
+            if os.path.isdir(path):
+                # Löschen des Verzeichnisses und aller darin enthaltenen Dateien
+                shutil.rmtree(path)
+                print(f"Das Verzeichnis {path} wurde gelöscht.")
+            else:
+                print(f"{path} ist kein Verzeichnis.")
+        else:
+            print(f"Der Pfad {path} existiert nicht.")
 
-
-     #   if subCheck and target_folder:
-      #      for root, dirs, files in os.walk(source_folder): #inkludiert subfolders
-       #         for file in files: #geht durch jedes file
-        #            if file.lower().endswith(('.jpg', '.jpeg', '.png')): #setzt die namen auf lowercase und nimmt nur bestimmte endungen
-         #               img_path = os.path.join(root, file) #setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
-          #              date = self.get_exif_date(img_path) #öffnet diesen oben erzeugten pfad und liest das exif datum aus
-           #             if date:      #falls ein Datum existiert
-                            # Erstellen eines neuen Dateinamens basierend auf dem Datum
-            #                new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]  #erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
-             #               relative_path = os.path.relpath(root, source_folder)
-              #              new_folder = os.path.join(target_folder, relative_path)
-               #             os.makedirs(new_folder, exist_ok=True)
-                #            new_filepath = os.path.join(new_folder, new_filename) #macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
-
-                            # Umbenennen des Bildes
-                 #           os.rename(img_path, new_filepath)  #benennt die alte datei in die neue um
-                  #          print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
-                #        else:
-                 #           print(f"Kein gültiges Datum gefunden für: {img_path}")
-                  #          withoutFolder = os.path.join(target_folder, "without_Date")
-
-
-                   #         if not os.path.exists(withoutFolder):
-                    #            os.makedirs(withoutFolder)
-#
- #                           shutil.move(img_path, withoutFolder)
-  #                          print(f"Datei {img_path} verschoben nach {withoutFolder}")
-
-
-   #     elif subCheck and not target_folder:
-    #        for root, dirs, files in os.walk(source_folder): #inkludiert subfolders
-     #           for file in files: #geht durch jedes file
-      #              if file.lower().endswith(('.jpg', '.jpeg', '.png')): #setzt die namen auf lowercase und nimmt nur bestimmte endungen
-       #                 img_path = os.path.join(root, file) #setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
-        #                date = self.get_exif_date(img_path) #öffnet diesen oben erzeugten pfad und liest das exif datum aus
-         #               if date:      #falls ein Datum existiert
-          #                  # Erstellen eines neuen Dateinamens basierend auf dem Datum
-           #                 new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]  #erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
-            #                new_filepath = os.path.join(root, new_filename)  #macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
-
-                            # Umbenennen des Bildes
-             #               os.rename(img_path, new_filepath)  #benennt die alte datei in die neue um
-              #              print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
-               #         else:
-                #            print(f"Kein gültiges Datum gefunden für: {img_path}")
-                 #           withoutFolder = os.path.join(root, "without_Date")
-#
-#
- #                           if not os.path.exists(withoutFolder):
-  #                              os.makedirs(withoutFolder)
-#
- #                           shutil.move(img_path, withoutFolder)
-  #                          print(f"Datei {img_path} verschoben nach {withoutFolder}")
-
-   #     elif not subCheck and target_folder:
-    #        for file in os.listdir(source_folder):
-     #           if file.lower().endswith(('.jpg', '.jpeg', '.png')):
-      #              img_path = os.path.join(source_folder,file)
-       #             date = self.get_exif_date(img_path)
-        #            if date:
-         #               new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
-          #              relative_path = os.path.relpath(root, source_folder)
-           #             new_folder = os.path.join(target_folder, relative_path)
-            #            os.makedirs(new_folder, exist_ok=True)
-             #           new_filepath = os.path.join(new_folder, new_filename)
-
-
-              #          os.rename(img_path, new_filepath)
-               #         print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
-                #    else:
-                 #       print(f"Kein gültiges Datum gefunden für: {img_path}")
-                  #      withoutFolder = os.path.join(target_folder, "ohneDatum")
-
-                   #     if not os.path.exists(withoutFolder):
-                    #        os.makedirs(withoutFolder)
-
-                     #   shutil.move(img_path, withoutFolder)
-                      #  print(f"Datei {img_path} verschoben nach {withoutFolder}")
-
-        #elif not subCheck and not target_folder:
-            #for file in os.listdir(source_folder):
-             #   if file.lower().endswith(('.jpg', '.jpeg', '.png')):
-              #      img_path = os.path.join(source_folder,file)
-               #     date = self.get_exif_date(img_path)
-                #    if date:
-                 #       new_filename = date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
-                  #      new_filepath = os.path.join(source_folder,new_filename)
-
-
-                   #     os.rename(img_path, new_filepath)
-                    #    print(f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
-                    #else:
-                     #   print(f"Kein gültiges Datum gefunden für: {img_path}")
-                      #  withoutFolder = os.path.join(source_folder, "ohneDatum")
-
-                       # if not os.path.exists(withoutFolder):
-                        #    os.makedirs(withoutFolder)
-
-                        #shutil.move(img_path, withoutFolder)
-                        #print(f"Datei {img_path} verschoben nach {withoutFolder}")
 
 
     def copyImages(self, source_folder, target_folder=None, subCheck=False):
@@ -213,6 +123,7 @@ class ApplicationLogic:
                             new_filename = get_new_filename(date,
                                                             img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
                             relative_path = os.path.relpath(root, source_folder)
+                            old_path = os.path.join(source_folder, relative_path)
                             new_folder = os.path.join(target_folder, relative_path)
                             os.makedirs(new_folder, exist_ok=True)
                             new_filepath = os.path.join(new_folder,
@@ -224,6 +135,7 @@ class ApplicationLogic:
                         else:
                             print(f"Kein gültiges Datum gefunden für: {img_path}")
                             move_file_without_date(img_path, target_folder)
+            self.delete_subfolder(old_path)
 
         elif subCheck and not target_folder:
             for root, dirs, files in os.walk(source_folder):  # inkludiert subfolders
