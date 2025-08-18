@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 import tkinter as tk
 from ttkbootstrap.constants import *
 import os
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import logging
 
 
@@ -22,6 +22,8 @@ class Gui:
                 self.sourceCheck_var.trace('w', self.log_variable_change)
                 self.targetCheck_var = tk.BooleanVar()
                 self.targetCheck_var.trace('w', self.log_variable_change)
+                self.deleteFolders_var = tk.BooleanVar()
+                self.deleteFolders_var.trace('w', self.log_variable_change)
                 self.create_widgets()
 
 
@@ -59,6 +61,11 @@ class Gui:
                 self.targetCheckLabel = ttk.Label(self.root, text="generate CSV-file")
                 self.targetCheckLabel.grid(row=7, column=2, sticky="w", pady=10)
 
+                self.deleteFoldersCheck = tk.Checkbutton(self.root, variable=self.deleteFolders_var)
+                self.deleteFoldersCheck.grid(row=7, column=3, sticky="e", pady=10)
+                self.deleteFoldersLabel = ttk.Label(self.root, text="delete empty Folders")
+                self.deleteFoldersLabel.grid(row=7, column=4, sticky="w", pady=10)
+
 
 
                 #Textausgabe
@@ -83,38 +90,43 @@ class Gui:
 
         def log_variable_change(self, *args):
                 logging.info(
-                        f'Änderung erkannt: sourceCheck_var = {self.sourceCheck_var.get()}, targetCheck_var = {self.targetCheck_var.get()}')
+                        f'Änderung erkannt: sourceCheck_var = {self.sourceCheck_var.get()}, targetCheck_var = {self.targetCheck_var.get()}, deleteFolders_var = {self.deleteFolders_var.get()}')
 
         def submit(self):
-                logging.info('Submit-Methode aufgerufen')
-                source_folder = self.sourceEntry.get()
-                target_folder = self.targetEntry.get()
-                logging.info(f'Source folder: {source_folder}, Target folder: {target_folder}')
-                logging.info(f'Wert von sourceCheck_var: {self.sourceCheck_var.get()}')
-                logging.info(f'Wert von targetCheck_var: {self.targetCheck_var.get()}')
+                try:
+                    logging.info('Submit-Methode aufgerufen')
+                    source_folder = self.sourceEntry.get()
+                    target_folder = self.targetEntry.get()
 
-                if self.sourceCheck_var.get():
+                    if not source_folder or not os.path.isdir(source_folder):
+                        messagebox.showerror("Error", "Please select a valid source folder.")
+                        return
+
+                    if target_folder and not os.path.isdir(target_folder):
+                        messagebox.showerror("Error", "Please select a valid target folder.")
+                        return
+
+                    logging.info(f'Source folder: {source_folder}, Target folder: {target_folder}')
+                    logging.info(f'Wert von sourceCheck_var: {self.sourceCheck_var.get()}')
+                    logging.info(f'Wert von targetCheck_var: {self.targetCheck_var.get()}')
+
+                    images = []
+                    if self.sourceCheck_var.get():
                         logging.info('Die if-Schleife für sourceCheck_var.get() wurde ausgeführt')
-                        self.logic.getPicPathsSub(source_folder)
-                        if target_folder:
-                                logging.info('Die if-Schleife für target_folder wurde ausgeführt')
-                                self.logic.copyImages(source_folder,target_folder,  subCheck=True)
-                        else:
-                                self.logic.copyImages(source_folder, subCheck=True)
-                elif not self.sourceCheck_var.get():
-                        self.logic.getPicPaths(source_folder)
-                        if target_folder:
-                                self.logic.copyImages(source_folder,target_folder,  subCheck=False)
-                        else:
-                                self.logic.copyImages(source_folder, subCheck=False)
+                        images = self.logic.getPicPathsSub(source_folder)
+                    else:
+                        images = self.logic.getPicPaths(source_folder)
 
-                if self.targetCheck_var.get():
-                        logging.info('Die if-Schleife für targetCheck_var.get() wurde ausgeführt')
-                        csv_filepath = os.path.join(target_folder if target_folder else source_folder, "data.csv")
-                        if self.sourceCheck_var.get():
-                                self.logic.writeCSVSub(csv_filepath, target_folder if target_folder else source_folder)
-                        else:
-                                self.logic.writeCSV(csv_filepath, source_folder)
+                    if images:
+                        self.logic.moveImagesByExif(source_folder, images, target_folder, self.sourceCheck_var.get(), self.deleteFolders_var.get())
+
+                        if self.targetCheck_var.get():
+                            logging.info('Die if-Schleife für targetCheck_var.get() wurde ausgeführt')
+                            csv_filepath = os.path.join(target_folder if target_folder else source_folder, "data.csv")
+                            self.logic.writeCSV(csv_filepath, images)
+                except ValueError as e:
+                    messagebox.showerror("Error", str(e))
+                    logging.error(f"Ein Fehler ist aufgetreten: {e}")
 
 
 
