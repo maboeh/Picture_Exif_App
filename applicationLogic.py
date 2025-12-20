@@ -3,6 +3,7 @@ import os
 import shutil
 from datetime import datetime
 import csv
+from functools import lru_cache
 
 class ApplicationLogic:
 
@@ -11,7 +12,9 @@ class ApplicationLogic:
 
 
 
-    def get_exif_date(self,image_path):
+    @staticmethod
+    @lru_cache(maxsize=1024)
+    def get_exif_date(image_path):
         """Diese Funktion liest das Datum aus den EXIF-Daten eines Bildes."""
         try:
             with open(image_path, 'rb') as img_file:
