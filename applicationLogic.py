@@ -45,6 +45,12 @@ class ApplicationLogic:
         self.images.sort(key=lambda x: self.get_exif_date(x) or datetime.min)
 
 
+    def sanitize_for_csv(self, value):
+        """Sanitize a value to prevent CSV Injection."""
+        if isinstance(value, str) and value.startswith(('=', '+', '-', '@')):
+            return "'" + value
+        return value
+
     def writeCSVSub(self,csv_filepath,source_folder):
         self.getPicPathsSub(source_folder)
         with open(csv_filepath, 'w', newline='',encoding='utf-8') as file:
@@ -54,7 +60,11 @@ class ApplicationLogic:
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
                 date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+
+                safe_img_path = self.sanitize_for_csv(img_path)
+                safe_date_str = self.sanitize_for_csv(date_str)
+
+                writer.writerow([safe_img_path, safe_date_str])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
@@ -73,7 +83,11 @@ class ApplicationLogic:
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
                 date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+
+                safe_img_path = self.sanitize_for_csv(img_path)
+                safe_date_str = self.sanitize_for_csv(date_str)
+
+                writer.writerow([safe_img_path, safe_date_str])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
