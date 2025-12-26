@@ -9,7 +9,11 @@ class ApplicationLogic:
     images = []
     image_data = {}
 
-
+    def sanitize_for_csv(self, value):
+        """Sanitizes a value to prevent CSV injection."""
+        if isinstance(value, str) and value.startswith(('=', '@', '+', '-')):
+            return "'" + value
+        return value
 
     def get_exif_date(self,image_path):
         """Diese Funktion liest das Datum aus den EXIF-Daten eines Bildes."""
@@ -54,7 +58,7 @@ class ApplicationLogic:
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
                 date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+                writer.writerow([self.sanitize_for_csv(img_path), self.sanitize_for_csv(date_str)])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
@@ -73,7 +77,7 @@ class ApplicationLogic:
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
                 date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+                writer.writerow([self.sanitize_for_csv(img_path), self.sanitize_for_csv(date_str)])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
