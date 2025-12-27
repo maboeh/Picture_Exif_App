@@ -1,6 +1,3 @@
-## 2024-05-23 - [Consolidated Checkbox Controls]
-**Learning:** Separate labels for checkboxes are a common anti-pattern in Tkinter apps that creates tiny, frustrating click targets. Combining them into a single  with the  attribute instantly fixes hit-testing and accessibility (screen reader association).
-**Action:** Always refactor  +  pairs into a single widget.
-## 2024-05-23 - [Consolidated Checkbox Controls]
-**Learning:** Separate labels for checkboxes are a common anti-pattern in Tkinter apps that creates tiny, frustrating click targets. Combining them into a single `ttk.Checkbutton` with the `text` attribute instantly fixes hit-testing and accessibility (screen reader association).
-**Action:** Always refactor `Checkbutton` + `Label` pairs into a single widget.
+## 2024-12-24 - Accessible Checkbuttons in Tkinter
+**Learning:** Separate Label and Checkbutton widgets in Tkinter create poor accessibility because clicking the text label doesn't toggle the checkbox. This is especially problematic for users with motor impairments.
+**Action:** Use `ttk.Checkbutton` with the `text` attribute instead of a separate Label widget. This ensures the entire label area is clickable and follows standard OS behaviors.
