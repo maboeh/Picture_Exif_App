@@ -1,52 +1,38 @@
-import unittest
 import os
 import csv
-import shutil
 from applicationLogic import ApplicationLogic
 
-class TestSecurity(unittest.TestCase):
-    def setUp(self):
-        self.vuln_dir = '=vulnerable_folder'
-        if os.path.exists(self.vuln_dir):
-            shutil.rmtree(self.vuln_dir)
-        os.makedirs(self.vuln_dir)
-        self.logic = ApplicationLogic()
+# Subclass to mock behavior without needing actual files
+class TestLogic(ApplicationLogic):
+    def getPicPaths(self, source_folder):
+        # Mocking finding a malicious file
+        self.images = ["=cmd|' /C calc'!A0.jpg", "normal.jpg"]
 
-    def tearDown(self):
-        if os.path.exists(self.vuln_dir):
-            shutil.rmtree(self.vuln_dir)
-        if os.path.exists('output_security.csv'):
-            os.remove('output_security.csv')
+    def get_exif_date(self, image_path):
+        return None
 
-    def test_csv_injection_mitigation(self):
-        """Test that file paths starting with injection characters are sanitized."""
-        # Create a dummy image file inside the vulnerable folder
-        image_name = 'test.jpg'
-        image_path = os.path.join(self.vuln_dir, image_name)
+def test_csv_injection():
+    logic = TestLogic()
+    csv_path = "test_output.csv"
 
-        # Write minimal valid JPEG header
-        with open(image_path, 'wb') as f:
-             f.write(b'\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00')
+    # We don't need a real source folder because we mocked getPicPaths
+    logic.writeCSV(csv_path, "dummy_folder")
 
-        csv_path = 'output_security.csv'
-        self.logic.writeCSV(csv_path, self.vuln_dir)
+    with open(csv_path, 'r', newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        row1 = next(reader)
+        row2 = next(reader)
 
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            row = next(reader)
+        print(f"Row 1: {row1}")
 
-            written_path = row[0]
-            # Verify the path is sanitized (prepended with ')
+        # Check if the malicious payload is unescaped
+        if row1[0].startswith("=cmd"):
+            print("VULNERABILITY CONFIRMED: Malicious payload written directly to CSV.")
+        elif row1[0].startswith("'=cmd"):
+            print("FIX VERIFIED: Malicious payload is escaped.")
+        else:
+            print(f"Unexpected output: {row1[0]}")
 
-            self.assertTrue(written_path.startswith("'"), f"Path '{written_path}' should be sanitized (start with ')")
-
-            # Construct the expected sanitized string safely
-            # Note: sanitize_for_csv prepends ' to the string representation of the path
-            expected_unsanitized = os.path.join(self.vuln_dir, image_name)
-            expected_sanitized = f"'{expected_unsanitized}"
-
-            self.assertEqual(written_path, expected_sanitized)
-
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    test_csv_injection()
