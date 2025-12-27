@@ -1,3 +1,6 @@
-## 2024-04-20 - Clickable Checkbox Labels
-**Learning:** Separate labels for checkboxes reduce accessibility and usability because users must click the exact small box to toggle.
-**Action:** Always use the `text` attribute of `ttk.Checkbutton` (or similar native widgets) to ensure the label is part of the clickable area and programmatically associated with the control.
+## 2024-05-23 - [Consolidated Checkbox Controls]
+**Learning:** Separate labels for checkboxes are a common anti-pattern in Tkinter apps that creates tiny, frustrating click targets. Combining them into a single  with the  attribute instantly fixes hit-testing and accessibility (screen reader association).
+**Action:** Always refactor  +  pairs into a single widget.
+## 2024-05-23 - [Consolidated Checkbox Controls]
+**Learning:** Separate labels for checkboxes are a common anti-pattern in Tkinter apps that creates tiny, frustrating click targets. Combining them into a single `ttk.Checkbutton` with the `text` attribute instantly fixes hit-testing and accessibility (screen reader association).
+**Action:** Always refactor `Checkbutton` + `Label` pairs into a single widget.
