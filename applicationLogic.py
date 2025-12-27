@@ -11,16 +11,19 @@ class ApplicationLogic:
     images = []
     image_data = {}
 
-    @staticmethod
-    @lru_cache(maxsize=None)
-    def get_exif_date(image_path):
-        """Diese Funktion liest das Datum aus den EXIF-Daten eines Bildes.
-
-        Optimierung: Die Funktion ist als @staticmethod markiert und nutzt @lru_cache,
-        um redundante Datei-Öffnungen zu vermeiden. Da getPicPaths das Datum für die
-        Sortierung liest und writeCSV/copyImages es erneut liest, reduziert das Caching
-        die I/O-Last drastisch (von 2N+ auf N+1 Dateioperationen).
+    def sanitize_for_csv(self, value):
         """
+        Sanitizes a value to prevent CSV Injection.
+        If the value starts with =, @, +, or -, it prepends a single quote.
+        """
+        if isinstance(value, str) and value.startswith(('=', '@', '+', '-')):
+            return "'" + value
+        return value
+
+    @staticmethod
+    @lru_cache(maxsize=1024)
+    def get_exif_date(image_path):
+        """Diese Funktion liest das Datum aus den EXIF-Daten eines Bildes."""
         try:
             with open(image_path, 'rb') as img_file:
                 img = Image(img_file)
@@ -33,8 +36,8 @@ class ApplicationLogic:
 
     def getPicPaths(self, source_folder):
         # Liste aller Bildpfade im Verzeichnis erstellen
-        self.images = [os.path.join(source_folder, i)
-                       for i in os.listdir(source_folder) if i.lower().endswith(('.jpg', '.jpeg', '.png'))]
+        self.images = [os.path.join(source_folder, i) for i in os.listdir(
+            source_folder) if i.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
         # Extrahieren der EXIF-Datumsdaten und Sortieren der Liste!!
         self.images.sort(key=lambda x: self.get_exif_date(x) or datetime.min)
@@ -50,7 +53,14 @@ class ApplicationLogic:
             # Extrahieren der EXIF-Datumsdaten und Sortieren der Liste!!
         self.images.sort(key=lambda x: self.get_exif_date(x) or datetime.min)
 
-    def writeCSVSub(self, csv_filepath, source_folder):
+
+    def sanitize_for_csv(self, value):
+        """Sanitize a value to prevent CSV Injection."""
+        if isinstance(value, str) and value.startswith(('=', '+', '-', '@')):
+            return "'" + value
+        return value
+
+    def writeCSVSub(self,csv_filepath,source_folder):
         self.getPicPathsSub(source_folder)
         with open(csv_filepath, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
@@ -58,9 +68,8 @@ class ApplicationLogic:
 
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
-                date_str = date.strftime(
-                    '%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+                date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
+                writer.writerow([self.sanitize_for_csv(img_path), self.sanitize_for_csv(date_str)])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
@@ -76,9 +85,8 @@ class ApplicationLogic:
 
             for img_path in self.images:
                 date = self.get_exif_date(img_path)
-                date_str = date.strftime(
-                    '%Y-%m-%d %H:%M:%S') if date else 'No Date'
-                writer.writerow([img_path, date_str])
+                date_str = date.strftime('%Y-%m-%d %H:%M:%S') if date else 'No Date'
+                writer.writerow([self.sanitize_for_csv(img_path), self.sanitize_for_csv(date_str)])
                 # Dictionary erzeugen - key in KLammern und den Wert zuweisen
                 self.image_data[img_path] = date_str
 
@@ -93,8 +101,10 @@ class ApplicationLogic:
                 for subfolder in os.listdir(main_folder):
                     subfolder_path = os.path.join(main_folder, subfolder)
                     # Überprüfen, ob das Unterverzeichnis leer ist
-                    if os.path.isdir(subfolder_path) and not os.listdir(subfolder_path):
-                        # Löschen des Unterverzeichnisses und aller darin enthaltenen Dateien
+                    if os.path.isdir(subfolder_path) and not os.listdir(
+                            subfolder_path):
+                        # Löschen des Unterverzeichnisses und aller darin
+                        # enthaltenen Dateien
                         shutil.rmtree(subfolder_path)
                         print(
                             f"Das Unterverzeichnis {subfolder_path} wurde gelöscht.")
@@ -123,7 +133,8 @@ class ApplicationLogic:
             return file.lower().endswith(('.jpg', '.jpeg', '.png'))
 
         def get_new_filename(date, img_path):
-            return date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
+            return date.strftime('%Y-%m-%d_%H-%M-%S') + \
+                os.path.splitext(img_path)[1]
 
         def move_file_without_date(img_path, root):
             withoutFolder = os.path.join(root, "without_Date")
@@ -133,32 +144,39 @@ class ApplicationLogic:
             print(f"Datei {img_path} verschoben nach {withoutFolder}")
 
         if subCheck and target_folder:
-            # inkludiert subfolders
-            for root, dirs, files in os.walk(source_folder):
+            for root, dirs, files in os.walk(
+                    source_folder):  # inkludiert subfolders
                 for file in files:  # geht durch jedes file
-                    # setzt die namen auf lowercase und nimmt nur bestimmte endungen
-                    if is_image(file):
-                        img_path = os.path.join(root,
-                                                file)  # setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
-                        date = self.get_exif_date(
-                            img_path)  # öffnet diesen oben erzeugten pfad und liest das exif datum aus
+                    if is_image(
+                            file):  # setzt die namen auf lowercase und nimmt nur bestimmte endungen
+                        # setzt einen pfad aus dem root verzeichnigs und dem
+                        # filenamen zusammen
+                        img_path = os.path.join(root, file)
+                        # öffnet diesen oben erzeugten pfad und liest das exif
+                        # datum aus
+                        date = self.get_exif_date(img_path)
                         if date:  # falls ein Datum existiert
-                            # Erstellen eines neuen Dateinamens basierend auf dem Datum
-                            new_filename = get_new_filename(date,
-                                                            img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
+                            # Erstellen eines neuen Dateinamens basierend auf
+                            # dem Datum
+                            # erzeugt einen neuen Dateinnamen aus dem Datum und
+                            # der Dateiendung ais img_path vrher
+                            new_filename = get_new_filename(date, img_path)
                             relative_path = os.path.relpath(
                                 root, source_folder)
                             new_folder = os.path.join(
                                 target_folder, relative_path)
                             os.makedirs(new_folder, exist_ok=True)
-                            new_filepath = os.path.join(new_folder,
-                                                        new_filename)  # macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
+                            # macht aus dem root verzeichnis und dem neuen
+                            # dateinmaen mit dem datum einen pfad
+                            new_filepath = os.path.join(
+                                new_folder, new_filename)
 
                             # Umbenennen des Bildes
                             # benennt die alte datei in die neue um
                             os.rename(img_path, new_filepath)
                             print(
-                                f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                                f"Bild umbenannt von {
+                                    os.path.basename(img_path)} zu {new_filename}")
                         else:
                             print(
                                 f"Kein gültiges Datum gefunden für: {img_path}")
@@ -167,27 +185,33 @@ class ApplicationLogic:
             self.delete_subfolders(source_folder)
 
         elif subCheck and not target_folder:
-            # inkludiert subfolders
-            for root, dirs, files in os.walk(source_folder):
+            for root, dirs, files in os.walk(
+                    source_folder):  # inkludiert subfolders
                 for file in files:  # geht durch jedes file
-                    # setzt die namen auf lowercase und nimmt nur bestimmte endungen
-                    if is_image(file):
-                        img_path = os.path.join(root,
-                                                file)  # setzt einen pfad aus dem root verzeichnigs und dem filenamen zusammen
-                        date = self.get_exif_date(
-                            img_path)  # öffnet diesen oben erzeugten pfad und liest das exif datum aus
+                    if is_image(
+                            file):  # setzt die namen auf lowercase und nimmt nur bestimmte endungen
+                        # setzt einen pfad aus dem root verzeichnigs und dem
+                        # filenamen zusammen
+                        img_path = os.path.join(root, file)
+                        # öffnet diesen oben erzeugten pfad und liest das exif
+                        # datum aus
+                        date = self.get_exif_date(img_path)
                         if date:  # falls ein Datum existiert
-                            # Erstellen eines neuen Dateinamens basierend auf dem Datum
-                            new_filename = get_new_filename(date,
-                                                            img_path)  # erzeugt einen neuen Dateinnamen aus dem Datum und der Dateiendung ais img_path vrher
-                            new_filepath = os.path.join(root,
-                                                        new_filename)  # macht aus dem root verzeichnis und dem neuen dateinmaen mit dem datum einen pfad
+                            # Erstellen eines neuen Dateinamens basierend auf
+                            # dem Datum
+                            # erzeugt einen neuen Dateinnamen aus dem Datum und
+                            # der Dateiendung ais img_path vrher
+                            new_filename = get_new_filename(date, img_path)
+                            # macht aus dem root verzeichnis und dem neuen
+                            # dateinmaen mit dem datum einen pfad
+                            new_filepath = os.path.join(root, new_filename)
 
                             # Umbenennen des Bildes
                             # benennt die alte datei in die neue um
                             os.rename(img_path, new_filepath)
                             print(
-                                f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                                f"Bild umbenannt von {
+                                    os.path.basename(img_path)} zu {new_filename}")
                         else:
                             print(
                                 f"Kein gültiges Datum gefunden für: {img_path}")
@@ -208,7 +232,8 @@ class ApplicationLogic:
 
                         os.rename(img_path, new_filepath)
                         print(
-                            f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                            f"Bild umbenannt von {
+                                os.path.basename(img_path)} zu {new_filename}")
                     else:
                         print(f"Kein gültiges Datum gefunden für: {img_path}")
                         move_file_without_date(img_path, target_folder)
@@ -226,7 +251,8 @@ class ApplicationLogic:
 
                         os.rename(img_path, new_filepath)
                         print(
-                            f"Bild umbenannt von {os.path.basename(img_path)} zu {new_filename}")
+                            f"Bild umbenannt von {
+                                os.path.basename(img_path)} zu {new_filename}")
                     else:
                         print(f"Kein gültiges Datum gefunden für: {img_path}")
                         move_file_without_date(img_path, source_folder)
