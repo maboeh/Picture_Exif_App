@@ -68,13 +68,13 @@ class Gui:
         def browseTarget(self):
                 filepath = filedialog.askdirectory()
                 if filepath:
-                        self.targetEntry.delete(0, END)
+                        self.targetEntry.delete(0, tk.END)
                         self.targetEntry.insert(0, filepath)
 
         def browseSource(self):
                 filepath = filedialog.askdirectory()
                 if filepath:
-                        self.sourceEntry.delete(0, END)
+                        self.sourceEntry.delete(0, tk.END)
                         self.sourceEntry.insert(0, filepath)
 
         def log_variable_change(self, *args):
