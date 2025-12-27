@@ -1,4 +1,3 @@
-from exif import Image
 import os
 import shutil
 from datetime import datetime
@@ -22,6 +21,10 @@ class ApplicationLogic:
             logging.error(f"Fehler beim Lesen der EXIF-Daten für {image_path}: {e}")
         return None
 
+    def getPicPaths(self, source_folder):
+        # Liste aller Bildpfade im Verzeichnis erstellen
+        self.images = [os.path.join(source_folder, i) for i in os.listdir(
+            source_folder) if i.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
     def getPicPaths(self,source_folder):
             # Liste aller Bildpfade im Verzeichnis erstellen
@@ -95,7 +98,8 @@ class ApplicationLogic:
             return file.lower().endswith(('.jpg', '.jpeg', '.png'))
 
         def get_new_filename(date, img_path):
-            return date.strftime('%Y-%m-%d_%H-%M-%S') + os.path.splitext(img_path)[1]
+            return date.strftime('%Y-%m-%d_%H-%M-%S') + \
+                os.path.splitext(img_path)[1]
 
         def move_file(img_path, new_filepath):
             try:

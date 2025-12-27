@@ -1,9 +1,15 @@
 import ttkbootstrap as ttk
 import tkinter as tk
 from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledText
 import os
 from tkinter import filedialog, messagebox
 import logging
+import tkinter as tk
+from tkinter import filedialog
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledText
 
 
 class Gui:
@@ -36,10 +42,8 @@ class Gui:
                 self.sourceBrowse = ttk.Button(self.root, text="Browse", command=self.browseSource)
                 self.sourceBrowse.grid(row=1, column=3, sticky="nsew", padx=10, pady=10)
 
-                self.sourceCheck = tk.Checkbutton(self.root, variable=self.sourceCheck_var)
-                self.sourceCheck.grid(row=2, column=1, sticky="e", pady=10)
-                self.sourceCheckLabel = ttk.Label(self.root, text="include Subfolders" )
-                self.sourceCheckLabel.grid(row=2, column=2, sticky="w", pady=10)
+                self.sourceCheck = ttk.Checkbutton(self.root, variable=self.sourceCheck_var, text="include Subfolders")
+                self.sourceCheck.grid(row=2, column=2, sticky="w", pady=10)
 
 
                 #Dropdown
@@ -56,10 +60,8 @@ class Gui:
                 self.targetBrowse = ttk.Button(self.root, text="Browse",command=self.browseTarget)
                 self.targetBrowse.grid(row=6, column=3, sticky="nsew", padx=10, pady=10)
 
-                self.targetCheck = tk.Checkbutton(self.root, variable=self.targetCheck_var)
-                self.targetCheck.grid(row=7, column=1, sticky="e", pady=10)
-                self.targetCheckLabel = ttk.Label(self.root, text="generate CSV-file")
-                self.targetCheckLabel.grid(row=7, column=2, sticky="w", pady=10)
+                self.targetCheck = ttk.Checkbutton(self.root, variable=self.targetCheck_var, text="generate CSV-file")
+                self.targetCheck.grid(row=7, column=2, sticky="w", pady=10)
 
                 self.deleteFoldersCheck = tk.Checkbutton(self.root, variable=self.deleteFolders_var)
                 self.deleteFoldersCheck.grid(row=7, column=3, sticky="e", pady=10)
@@ -69,7 +71,7 @@ class Gui:
 
 
                 #Textausgabe
-                self.textWidget = ttk.ScrolledText(self.root, height=5, width=50)
+                self.textWidget = ScrolledText(self.root, height=5, width=50)
                 self.textWidget.grid(row=8, column=1, columnspan=5, sticky="nsew", padx=10, pady=10)
 
                 #Submit
