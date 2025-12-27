@@ -55,6 +55,12 @@ class ApplicationLogic:
         self.images.sort(key=lambda x: self.get_exif_date(x) or datetime.min)
 
 
+    def sanitize_for_csv(self, value):
+        """Sanitize a value to prevent CSV Injection."""
+        if isinstance(value, str) and value.startswith(('=', '+', '-', '@')):
+            return "'" + value
+        return value
+
     def writeCSVSub(self,csv_filepath,source_folder):
         self.getPicPathsSub(source_folder)
         with open(csv_filepath, 'w', newline='',encoding='utf-8') as file:
