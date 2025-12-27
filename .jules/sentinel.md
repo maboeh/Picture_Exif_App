@@ -1,4 +1,6 @@
-## 2024-05-23 - CSV Injection in Exports
-**Vulnerability:** The application was exporting file paths directly to CSV without sanitization. If a file path started with characters like `=`, `@`, `+`, or `-`, opening the CSV in Excel could execute it as a formula.
-**Learning:** Even desktop applications are vulnerable to CSV injection if they export user-controlled data (filenames, metadata) to CSVs intended for spreadsheet software.
-**Prevention:** Implemented `sanitize_for_csv` to quote values starting with dangerous characters.
+Sentinel Journal
+
+## 2025-12-21 - [CSV Injection Vulnerability]
+**Vulnerability:** User-controlled filenames or directory names starting with =, @, +, or - could be executed as formulas when opening the generated CSV in spreadsheet software.
+**Learning:** Even when using the standard `csv` module, formula injection is possible because it's a feature of the spreadsheet software, not the CSV format itself.
+**Prevention:** Always sanitize data written to CSVs by prepending a single quote (') if the value starts with dangerous characters.

@@ -3,6 +3,7 @@ import os
 import shutil
 from datetime import datetime
 import csv
+from functools import lru_cache
 
 class ApplicationLogic:
 
@@ -10,12 +11,17 @@ class ApplicationLogic:
     image_data = {}
 
     def sanitize_for_csv(self, value):
-        """Sanitizes a value to prevent CSV injection."""
+        """
+        Sanitizes a value to prevent CSV Injection.
+        If the value starts with =, @, +, or -, it prepends a single quote.
+        """
         if isinstance(value, str) and value.startswith(('=', '@', '+', '-')):
             return "'" + value
         return value
 
-    def get_exif_date(self,image_path):
+    @staticmethod
+    @lru_cache(maxsize=1024)
+    def get_exif_date(image_path):
         """Diese Funktion liest das Datum aus den EXIF-Daten eines Bildes."""
         try:
             with open(image_path, 'rb') as img_file:
