@@ -1,3 +1,3 @@
-## 2024-05-23 - [EXIF Date Caching]
-**Learning:** `functools.lru_cache` on instance methods can cause memory leaks if `self` is part of the cache key and the instance is long-lived or frequently recreated.
-**Action:** Use `@staticmethod` for cached methods if they don't rely on instance state, or use a cache attached to the instance, or ensure `maxsize` is bounded. In this case, switching to `@staticmethod` and `@lru_cache(maxsize=1024)` solved the performance bottleneck (4.9x speedup) safely.
+## 2024-05-22 - Performance Pattern: functools.lru_cache on class methods
+**Learning:** When applying `functools.lru_cache` to class methods, convert them to `@staticmethod` where possible to avoid memory leaks related to the `self` instance and to ensure cache persistence across object lifecycles.
+**Action:** Identify stateless instance methods that are computationally expensive or IO-bound and convert them to cached static methods.
