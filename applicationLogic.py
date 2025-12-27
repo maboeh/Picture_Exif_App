@@ -1,9 +1,9 @@
-from exif import Image
 import os
 import shutil
 from datetime import datetime
 import csv
 from functools import lru_cache
+from exif import Image
 
 
 class ApplicationLogic:
