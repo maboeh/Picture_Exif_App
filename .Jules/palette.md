@@ -1,5 +1,3 @@
-# Palette's Journal
-
-## 2024-10-25 - Tkinter Checkbox Accessibility
-**Learning:** In Tkinter/ttkbootstrap, separating `Checkbutton` and its label (via a separate `Label` widget) destroys the expected behavior of clicking the text to toggle the checkbox. It also complicates layout management.
-**Action:** Always use the `text` attribute of `ttk.Checkbutton` instead of a separate label. This improves click target size (Fitts's Law) and simplifies the grid layout code.
+## 2024-04-20 - Clickable Checkbox Labels
+**Learning:** Separate labels for checkboxes reduce accessibility and usability because users must click the exact small box to toggle.
+**Action:** Always use the `text` attribute of `ttk.Checkbutton` (or similar native widgets) to ensure the label is part of the clickable area and programmatically associated with the control.
