@@ -3,8 +3,12 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.scrolled import ScrolledText
 import os
-from tkinter import filedialog
 import logging
+import tkinter as tk
+from tkinter import filedialog
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledText
 
 
 class Gui:
@@ -80,67 +84,26 @@ class Gui:
 
         def log_variable_change(self, *args):
                 logging.info(
-                        f'Änderung erkannt: sourceCheck_var = {self.sourceCheck_var.get()}, targetCheck_var = {self.targetCheck_var.get()}')
+                    'Die if-Schleife für target_folder wurde ausgeführt')
+                self.logic.copyImages(
+                    source_folder, target_folder,  subCheck=True)
+            else:
+                self.logic.copyImages(source_folder, subCheck=True)
+        elif not self.sourceCheck_var.get():
+            self.logic.getPicPaths(source_folder)
+            if target_folder:
+                self.logic.copyImages(
+                    source_folder, target_folder,  subCheck=False)
+            else:
+                self.logic.copyImages(source_folder, subCheck=False)
 
-        def submit(self):
-                logging.info('Submit-Methode aufgerufen')
-                source_folder = self.sourceEntry.get()
-                target_folder = self.targetEntry.get()
-                logging.info(f'Source folder: {source_folder}, Target folder: {target_folder}')
-                logging.info(f'Wert von sourceCheck_var: {self.sourceCheck_var.get()}')
-                logging.info(f'Wert von targetCheck_var: {self.targetCheck_var.get()}')
-
-                if self.sourceCheck_var.get():
-                        logging.info('Die if-Schleife für sourceCheck_var.get() wurde ausgeführt')
-                        self.logic.getPicPathsSub(source_folder)
-                        if target_folder:
-                                logging.info('Die if-Schleife für target_folder wurde ausgeführt')
-                                self.logic.copyImages(source_folder,target_folder,  subCheck=True)
-                        else:
-                                self.logic.copyImages(source_folder, subCheck=True)
-                elif not self.sourceCheck_var.get():
-                        self.logic.getPicPaths(source_folder)
-                        if target_folder:
-                                self.logic.copyImages(source_folder,target_folder,  subCheck=False)
-                        else:
-                                self.logic.copyImages(source_folder, subCheck=False)
-
-                if self.targetCheck_var.get():
-                        logging.info('Die if-Schleife für targetCheck_var.get() wurde ausgeführt')
-                        csv_filepath = os.path.join(target_folder if target_folder else source_folder, "data.csv")
-                        if self.sourceCheck_var.get():
-                                self.logic.writeCSVSub(csv_filepath, target_folder if target_folder else source_folder)
-                        else:
-                                self.logic.writeCSV(csv_filepath, source_folder)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if self.targetCheck_var.get():
+            logging.info(
+                'Die if-Schleife für targetCheck_var.get() wurde ausgeführt')
+            csv_filepath = os.path.join(
+                target_folder if target_folder else source_folder, "data.csv")
+            if self.sourceCheck_var.get():
+                self.logic.writeCSVSub(
+                    csv_filepath, target_folder if target_folder else source_folder)
+            else:
+                self.logic.writeCSV(csv_filepath, source_folder)
